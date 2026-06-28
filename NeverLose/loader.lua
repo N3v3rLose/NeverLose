@@ -1,30 +1,32 @@
--- NeverLose Local Loader для Xeno
--- Запускай этот файл
+-- NeverLose GitHub Loader v0.0.5
+-- by N3v3rLose
 
-local folder = "NeverLose"
+local baseUrl = "https://raw.githubusercontent.com/N3v3rLose/NeverLose/main/NeverLose/"
 
 local function load(path)
-    local fullpath = folder .. "/" .. path .. ".lua"
+    local url = baseUrl .. path .. ".lua"
+    local success, content = pcall(function()
+        return game:HttpGet(url)
+    end)
     
-    if not isfile(fullpath) then
-        warn("[NeverLose] File not found: " .. fullpath)
+    if not success or content:find("404") then
+        warn("[NeverLose] File not found: " .. path)
         return nil
     end
 
-    local success, result = pcall(function()
-        local content = readfile(fullpath)
-        return loadstring(content, "@" .. fullpath)()
+    local ok, result = pcall(function()
+        return loadstring(content, "@" .. path)()
     end)
     
-    if not success then
-        warn("[NeverLose] Failed to load: " .. fullpath)
+    if not ok then
+        warn("[NeverLose] Failed to load: " .. path)
         warn("Error: " .. tostring(result))
         return nil
     end
     return result
 end
 
-print("[NeverLose] Starting local modular load...")
+print("[NeverLose] Starting cloud modular load...")
 
 -- Core
 local Storage      = load("core/storage")
@@ -91,5 +93,5 @@ if Core and Core.Start then
     Core.Start(ENV)
 end
 
-print("[NeverLose] v0.0.5 loaded successfully (Local Mode)")
+print("[NeverLose] v0.0.5 loaded successfully (Cloud Mode)")
 print("[NeverLose] Press RightShift to open the menu")
