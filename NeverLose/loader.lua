@@ -79,14 +79,26 @@ ENV.Panic  = load("menu/panic")
 ENV.Unload = load("menu/unload")
 ENV.Info   = load("menu/info")
 
--- Tabs
-load("tabs/movement_tab")
-load("tabs/visual_tab")
-load("tabs/combat_tab")
-load("tabs/other_tab")
-load("tabs/misc_tab")
-load("tabs/theme_tab")
-load("tabs/menu_tab")
+-- Tabs (вызываем как функции с ENV)
+local function loadTab(path)
+    local tabFunc = load(path)
+    if type(tabFunc) == "function" then
+        local ok, err = pcall(tabFunc, ENV)
+        if not ok then
+            warn("[NeverLose] Tab error in " .. path .. ": " .. tostring(err))
+        end
+    else
+        warn("[NeverLose] Tab " .. path .. " did not return a function")
+    end
+end
+
+loadTab("tabs/movement_tab")
+loadTab("tabs/visual_tab")
+loadTab("tabs/combat_tab")
+loadTab("tabs/other_tab")
+loadTab("tabs/misc_tab")
+loadTab("tabs/theme_tab")
+loadTab("tabs/menu_tab")
 
 -- Запуск
 if Core and Core.Start then
